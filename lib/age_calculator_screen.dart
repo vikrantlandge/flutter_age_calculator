@@ -12,22 +12,51 @@ class AgeCalculatorScreen extends StatefulWidget {
 
 class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
   final TextEditingController _dateInputValue = TextEditingController();
-  int ageYear = 0, ageMonths = 0, ageDays = 0,totalMonths = 0,totalDays=0,totalWeeks =0 ,totalHours =0 ,totalMinutes=0,totalSeconds=0,monthsUntilNextBirthday=0,daysUntilNextBirthday =0;
-  String nextBirthdayDay="";
+  int ageYear = 0,
+      ageMonths = 0,
+      ageDays = 0,
+      totalMonths = 0,
+      totalDays = 0,
+      totalWeeks = 0,
+      totalHours = 0,
+      totalMinutes = 0,
+      totalSeconds = 0,
+      monthsUntilNextBirthday = 0,
+      daysUntilNextBirthday = 0;
+  String nextBirthdayDay = "";
   //DateTime _dateTime=DateTime.now();
   Future<void> _showCalender() async {
     await showDatePicker(
-            context: context, firstDate: DateTime(0), lastDate: DateTime.now())
-        .then((value) {
+      context: context,
+      firstDate: DateTime(0),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blue, // Change the header background color
+            hintColor: Colors.green, // Change the selected date's color
+            primaryTextTheme: TextTheme(
+              titleLarge: TextStyle(
+                color: Colors.white, // Change the header text color
+                fontWeight: FontWeight.bold, // Customize text weight if needed
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((value) {
       setState(() {
         if (value != null) {
-          _dateInputValue.text = value.toString();
+          _dateInputValue.text = DateFormat("dd/MM/yy").format(value);
+          //  String toConvert=DateFormat("dd/mm/yy").format(value);
           ageYear = DateTime.now().year - value.year;
           ageMonths = DateTime.now().month - value.month;
           ageDays = DateTime.now().day - value.day;
           if (ageDays < 0) {
             ageMonths -= 1;
-            ageDays += DateTime(DateTime.now().year, DateTime.now().month, 0).day;
+            ageDays +=
+                DateTime(DateTime.now().year, DateTime.now().month, 0).day;
           }
 
           if (ageMonths < 0) {
@@ -35,23 +64,26 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
             ageMonths += 12;
           }
           Duration ageDuration = DateTime.now().difference(value);
-           totalMonths = (ageYear * 12) + ageMonths;
-           totalDays = ageDuration.inDays;
-           totalWeeks = totalDays ~/ 7;
-           totalHours = ageDuration.inHours;
-           totalMinutes = ageDuration.inMinutes;
-           totalSeconds = ageDuration.inSeconds;
+          totalMonths = (ageYear * 12) + ageMonths;
+          totalDays = ageDuration.inDays;
+          totalWeeks = totalDays ~/ 7;
+          totalHours = ageDuration.inHours;
+          totalMinutes = ageDuration.inMinutes;
+          totalSeconds = ageDuration.inSeconds;
 
           // Find the next birthday
-          DateTime nextBirthday = DateTime(DateTime.now().year, value.month, value.day);
+          DateTime nextBirthday =
+              DateTime(DateTime.now().year, value.month, value.day);
           if (DateTime.now().isAfter(nextBirthday)) {
-            nextBirthday = DateTime(DateTime.now().year + 1, value.month, value.day);
+            nextBirthday =
+                DateTime(DateTime.now().year + 1, value.month, value.day);
           }
-          Duration timeUntilNextBirthday = nextBirthday.difference(DateTime.now());
-           monthsUntilNextBirthday = timeUntilNextBirthday.inDays ~/ 30;
-           daysUntilNextBirthday = timeUntilNextBirthday.inDays % 30;
+          Duration timeUntilNextBirthday =
+              nextBirthday.difference(DateTime.now());
+          monthsUntilNextBirthday = timeUntilNextBirthday.inDays ~/ 30;
+          daysUntilNextBirthday = timeUntilNextBirthday.inDays % 30;
 
-           // find day in words like monday,tuesday etc
+          // find day in words like monday,tuesday etc
           nextBirthdayDay = DateFormat('EEEE').format(nextBirthday);
         } else {
           var sandbarForDate = SnackBar(
@@ -87,7 +119,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
               children: [
                 //Birth Data container
                 Container(
-                 // height: MediaQuery.of(context).size.height * 0.18,
+                  // height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
@@ -99,8 +131,8 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, left: 15, bottom: 3),
+                        padding:
+                            const EdgeInsets.only(top: 15, left: 15, bottom: 3),
                         child: Text(
                           "BirthData",
                           style: TextStyle(
@@ -132,6 +164,7 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15))),
                                 suffixIcon: Icon(Icons.calendar_today_rounded)),
+                            style: TextStyle(fontWeight: FontWeight.w900),
                           ),
                         ),
                       )
@@ -142,7 +175,6 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
 
                 Padding(
                   padding: const EdgeInsets.only(top: 0),
-
                   child: Card(
                     margin: EdgeInsets.zero,
                     elevation: 2,
@@ -196,9 +228,11 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                           ageDetailsValue: totalMonths.toString(),
                         ),
                         AgeDetailsWidget(
-                            ageDetails: "Weeks old", ageDetailsValue: totalWeeks.toString()),
+                            ageDetails: "Weeks old",
+                            ageDetailsValue: totalWeeks.toString()),
                         AgeDetailsWidget(
-                            ageDetails: "Days old", ageDetailsValue: totalDays.toString()),
+                            ageDetails: "Days old",
+                            ageDetailsValue: totalDays.toString()),
                         AgeDetailsWidget(
                             ageDetails: "Hours ols (approx)",
                             ageDetailsValue: totalHours.toString()),
@@ -257,7 +291,8 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                                                   BorderRadius.circular(10)),
                                           child: Center(
                                             child: Text(
-                                             monthsUntilNextBirthday.toString(),
+                                              monthsUntilNextBirthday
+                                                  .toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.w900,
@@ -280,7 +315,8 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                                                     BorderRadius.circular(10)),
                                             child: Center(
                                               child: Text(
-                                                daysUntilNextBirthday.toString(),
+                                                daysUntilNextBirthday
+                                                    .toString(),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.w900,
@@ -328,7 +364,9 @@ class _AgeCalculatorScreenState extends State<AgeCalculatorScreen> {
                                             .w400), // Default text style
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text:nextBirthdayDay!=""? nextBirthdayDay : "___",
+                                        text: nextBirthdayDay != ""
+                                            ? nextBirthdayDay
+                                            : "___",
                                         style: TextStyle(
                                             fontWeight: FontWeight
                                                 .bold), // Bold style for "india"
